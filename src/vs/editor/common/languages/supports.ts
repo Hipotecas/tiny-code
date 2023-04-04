@@ -1,7 +1,40 @@
-export class ScopedLineTokens {
-  _scopedLineTokensBrand: void = undefined
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
-  public readonly languageId: string;
+import { LineTokens } from 'vs/editor/common/tokens/lineTokens';
+import { StandardTokenType } from 'vs/editor/common/encodedTokenAttributes';
+
+export function createScopedLineTokens(context: LineTokens, offset: number): ScopedLineTokens {
+	const tokenCount = context.getCount();
+	const tokenIndex = context.findTokenIndexAtOffset(offset);
+	const desiredLanguageId = context.getLanguageId(tokenIndex);
+
+	let lastTokenIndex = tokenIndex;
+	while (lastTokenIndex + 1 < tokenCount && context.getLanguageId(lastTokenIndex + 1) === desiredLanguageId) {
+		lastTokenIndex++;
+	}
+
+	let firstTokenIndex = tokenIndex;
+	while (firstTokenIndex > 0 && context.getLanguageId(firstTokenIndex - 1) === desiredLanguageId) {
+		firstTokenIndex--;
+	}
+
+	return new ScopedLineTokens(
+		context,
+		desiredLanguageId,
+		firstTokenIndex,
+		lastTokenIndex + 1,
+		context.getStartOffset(firstTokenIndex),
+		context.getEndOffset(lastTokenIndex)
+	);
+}
+
+export class ScopedLineTokens {
+	_scopedLineTokensBrand: void = undefined;
+
+	public readonly languageId: string;
 	private readonly _actual: LineTokens;
 	private readonly _firstTokenIndex: number;
 	private readonly _lastTokenIndex: number;
@@ -24,7 +57,7 @@ export class ScopedLineTokens {
 		this._lastCharOffset = lastCharOffset;
 	}
 
-  public getLineContent(): string {
+	public getLineContent(): string {
 		const actualLineContent = this._actual.getLineContent();
 		return actualLineContent.substring(this.firstCharOffset, this._lastCharOffset);
 	}
@@ -45,4 +78,12 @@ export class ScopedLineTokens {
 	public getStandardTokenType(tokenIndex: number): StandardTokenType {
 		return this._actual.getStandardTokenType(tokenIndex + this._firstTokenIndex);
 	}
+}
+
+const enum IgnoreBracketsInTokens {
+	value = StandardTokenType.Comment | StandardTokenType.String | StandardTokenType.RegEx
+}
+
+export function ignoreBracketsInToken(standardTokenType: StandardTokenType): boolean {
+	return (standardTokenType & IgnoreBracketsInTokens.value) !== 0;
 }

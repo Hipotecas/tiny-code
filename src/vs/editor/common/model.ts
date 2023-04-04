@@ -1,9 +1,12 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import { Event } from 'vs/base/common/event';
 import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { equals } from 'vs/base/common/objects';
-import { ThemeColor } from 'vs/base/common/themables';
 import { URI } from 'vs/base/common/uri';
 import { ISingleEditOperation } from 'vs/editor/common/core/editOperation';
 import { IPosition, Position } from 'vs/editor/common/core/position';
@@ -13,11 +16,11 @@ import { TextChange } from 'vs/editor/common/core/textChange';
 import { WordCharacterClassifier } from 'vs/editor/common/core/wordCharacterClassifier';
 import { IWordAtPosition } from 'vs/editor/common/core/wordHelper';
 import { FormattingOptions } from 'vs/editor/common/languages';
-import { ILanguageSelection } from 'vs/editor/common/languages/language';
 import { IBracketPairsTextModelPart } from 'vs/editor/common/textModelBracketPairs';
 import { IModelContentChange, IModelContentChangedEvent, IModelDecorationsChangedEvent, IModelLanguageChangedEvent, IModelLanguageConfigurationChangedEvent, IModelOptionsChangedEvent, IModelTokensChangedEvent, InternalModelContentChangeEvent, ModelInjectedTextChangedEvent } from 'vs/editor/common/textModelEvents';
 import { IGuidesTextModelPart } from 'vs/editor/common/textModelGuides';
 import { ITokenizationTextModelPart } from 'vs/editor/common/tokenizationTextModelPart';
+import { ThemeColor } from 'vs/base/common/themables';
 import { UndoRedoGroup } from 'vs/platform/undoRedo/common/undoRedo';
 
 /**
@@ -95,9 +98,6 @@ export interface IModelDecorationOptions {
 	 * In this case, the range must be empty and set to the last line.
 	 */
 	blockIsAfterEnd?: boolean | null;
-	blockDoesNotCollapse?: boolean | null;
-	blockPadding?: [top: number, right: number, bottom: number, left: number] | null;
-
 	/**
 	 * Message to be rendered when hovering over the glyph margin decoration.
 	 */
@@ -871,15 +871,7 @@ export interface ITextModel {
 	 * @param source The source of the call that set the language.
 	 * @internal
 	 */
-	setLanguage(languageId: string, source?: string): void;
-
-	/**
-	 * Set the current language mode associated with the model.
-	 * @param languageSelection The new language selection.
-	 * @param source The source of the call that set the language.
-	 * @internal
-	 */
-	setLanguage(languageSelection: ILanguageSelection, source?: string): void;
+	setMode(languageId: string, source?: string): void;
 
 	/**
 	 * Returns the real (inner-most) language mode at a given position.

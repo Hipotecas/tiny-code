@@ -1,10 +1,14 @@
-import { CallbackIterable } from "vs/base/common/arrays";
-import { Event } from "vs/base/common/event";
-import { IPosition } from "vs/editor/common/core/position";
-import { IRange } from "vs/editor/common/core/range";
-import { ClosingBracketKind, OpeningBracketKind } from "vs/editor/common/languages/supports/languageBracketsConfiguration";
-import { PairAstNode } from "vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/ast";
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
+import { CallbackIterable } from 'vs/base/common/arrays';
+import { Event } from 'vs/base/common/event';
+import { IPosition } from 'vs/editor/common/core/position';
+import { IRange, Range } from 'vs/editor/common/core/range';
+import { ClosingBracketKind, OpeningBracketKind } from 'vs/editor/common/languages/supports/languageBracketsConfiguration';
+import { PairAstNode } from 'vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/ast';
 
 export interface IBracketPairsTextModelPart {
 	/**
@@ -24,7 +28,7 @@ export interface IBracketPairsTextModelPart {
 	 */
 	getBracketPairsInRangeWithMinIndentation(range: IRange): CallbackIterable<BracketPairWithMinIndentationInfo>;
 
-	getBracketsInRange(range: IRange, onlyColorizedBrackets?: boolean): CallbackIterable<BracketInfo>;
+	getBracketsInRange(range: IRange): CallbackIterable<BracketInfo>;
 
 	/**
 	 * Find the matching bracket of `request` up, counting brackets.
@@ -62,6 +66,21 @@ export interface IBracketPairsTextModelPart {
 	matchBracket(position: IPosition, maxDuration?: number): [Range, Range] | null;
 }
 
+export interface IFoundBracket {
+	range: Range;
+	bracketInfo: OpeningBracketKind | ClosingBracketKind;
+}
+
+export class BracketInfo {
+	constructor(
+		public readonly range: Range,
+		/** 0-based level */
+		public readonly nestingLevel: number,
+		public readonly nestingLevelOfEqualBracketType: number,
+		public readonly isInvalid: boolean,
+	) { }
+}
+
 export class BracketPairInfo {
 	constructor(
 		public readonly range: Range,
@@ -83,6 +102,7 @@ export class BracketPairInfo {
 		return this.bracketPairNode.closingBracket?.bracketInfo as ClosingBracketKind | undefined;
 	}
 }
+
 export class BracketPairWithMinIndentationInfo extends BracketPairInfo {
 	constructor(
 		range: Range,
@@ -101,18 +121,4 @@ export class BracketPairWithMinIndentationInfo extends BracketPairInfo {
 	) {
 		super(range, openingBracketRange, closingBracketRange, nestingLevel, nestingLevelOfEqualBracketType, bracketPairNode);
 	}
-}
-
-export interface IFoundBracket {
-	range: Range;
-	bracketInfo: OpeningBracketKind | ClosingBracketKind;
-}
-
-export class BracketInfo  {
-  constructor(
-    public readonly range: Range,
-    public readonly nestingLevel: number,
-    public readonly nestingLevelOfEqualBracketType: number,
-    public readonly isInvalid: boolean,
-  ) {}
 }

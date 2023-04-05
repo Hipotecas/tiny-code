@@ -1,17 +1,35 @@
-import {DisposableStore, IDisposable} from "vs/base/common/lifecycle";
-import {URI} from "vs/base/common/uri";
-import {PLAINTEXT_LANGUAGE_ID} from "vs/editor/common/languages/modesRegistry";
+import { DisposableStore, IDisposable } from "vs/base/common/lifecycle";
+import { URI } from "vs/base/common/uri";
+import { ILanguageService } from "vs/editor/common/languages/language";
+import { ILanguageConfigurationService } from "vs/editor/common/languages/languageConfigurationRegistry";
+import { PLAINTEXT_LANGUAGE_ID } from "vs/editor/common/languages/modesRegistry";
 import {
   BracketPairColorizationOptions,
   DefaultEndOfLine,
   ITextBufferFactory,
   ITextModelCreationOptions
 } from "vs/editor/common/model";
-import {TextModel} from "vs/editor/common/model/textModel";
-import {IInstantiationService} from "vs/platform/instantiation/common/instantiation";
-import {ServiceIdCtorPair, createServices} from "vs/platform/instantiation/test/common/instantiationServiceMock";
+import { TextModel } from "vs/editor/common/model/textModel";
+import { ILanguageFeatureDebounceService, LanguageFeatureDebounceService } from "vs/editor/common/services/languageFeatureDebounce";
+import { ILanguageFeaturesService } from "vs/editor/common/services/languageFeatures";
+import { LanguageFeaturesService } from "vs/editor/common/services/languageFeaturesService";
+import { LanguageService } from "vs/editor/common/services/languageService";
+import { IModelService } from "vs/editor/common/services/model";
+import { ModelService } from "vs/editor/common/services/modelService";
+import { ITextResourcePropertiesService } from "vs/editor/common/services/textResourceConfiguration";
+import { IDialogService } from "vs/platform/dialogs/common/dialogs";
+import { TestDialogService } from "vs/platform/dialogs/test/common/testDialogService";
+import { IInstantiationService } from "vs/platform/instantiation/common/instantiation";
+import { ServiceIdCtorPair, createServices } from "vs/platform/instantiation/test/common/instantiationServiceMock";
+import { ILogService, NullLogService } from "vs/platform/log/common/log";
 import { INotificationService } from "vs/platform/notification/common/notification";
 import { TestNotificationService } from "vs/platform/notification/test/common/testNotificationService";
+import { IThemeService } from "vs/platform/theme/common/themeService";
+import { TestThemeService } from "vs/platform/theme/test/common/testThemeService";
+import { IUndoRedoService } from "vs/platform/undoRedo/common/undoRedo";
+import { UndoRedoService } from "vs/platform/undoRedo/common/undoRedoService";
+import { TestLanguageConfigurationService } from "./modes/testLanguageConfigurationService";
+import { TestTextResourcePropertiesService } from "./services/testTextResourcePropertiesService";
 
 
 class TestTextModel extends TextModel {
@@ -69,6 +87,16 @@ export function instantiateTextModel(instantiationService: IInstantiationService
 
 export function createModelServices(disposables: DisposableStore, services: ServiceIdCtorPair<any>[] = []): IInstantiationService {
   return createServices(disposables, services.concat([
-    INotificationService, TestNotificationService 
+    [INotificationService, TestNotificationService],
+    [IDialogService, TestDialogService],
+    [IUndoRedoService, UndoRedoService],
+    [ILanguageService, LanguageService],
+    [ILanguageConfigurationService, TestLanguageConfigurationService],
+    [ITextResourcePropertiesService, TestTextResourcePropertiesService],
+    [IThemeService, TestThemeService],
+    [ILogService, NullLogService],
+    [ILanguageFeatureDebounceService, LanguageFeatureDebounceService],
+    [ILanguageFeaturesService, LanguageFeaturesService],
+    [IModelService, ModelService]
   ]))
 }

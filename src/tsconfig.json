@@ -10,7 +10,6 @@
 		"target": "es2021",
 		"types": [
       "vitest/globals",
-      "sinon"
 		]
 	},
 	"include": [

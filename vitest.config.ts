@@ -6,8 +6,9 @@ const resolve = (p: string) => path.resolve(__dirname, p)
 export default defineConfig({
   test: {
     globals: true,
-    alias: {
-      vs: resolve('src/vs')
-    }
+    environment: 'node',
+    alias: [
+      { find: 'vs', replacement: resolve('src/vs') },
+    ],
   }
 })

@@ -6,9 +6,12 @@ const resolve = (p: string) => path.resolve(__dirname, p)
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node',
+    environment: 'jsdom',
+    // false to fix canvas node error
+    threads: false,
     alias: [
       { find: 'vs', replacement: resolve('src/vs') },
     ],
+    setupFiles: ['test/setup.ts'],
   }
 })

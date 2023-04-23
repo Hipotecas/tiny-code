@@ -67,8 +67,8 @@ describe('Common Editor Config', () => {
 	function assertWrapping(config: TestConfiguration, isViewportWrapping: boolean, wrappingColumn: number): void {
 		const options = config.options;
 		const wrappingInfo = options.get(EditorOption.wrappingInfo);
-    expect(wrappingInfo.isViewportWrapping).toBe(isViewportWrapping)
-    expect(wrappingInfo.wrappingColumn).toBe(wrappingColumn)
+    expect(wrappingInfo.isViewportWrapping).toStrictEqual(isViewportWrapping)
+    expect(wrappingInfo.wrappingColumn).toStrictEqual(wrappingColumn)
 	}
 
 	test('wordWrap default', () => {
